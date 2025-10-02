@@ -2,10 +2,6 @@
 
 A web application for simulating or visualizing donuts, built with React and PrimeReact.
 
-## 🚀 Live Demo
-
-[http://donut-sim.s3-website-ap-southeast-2.amazonaws.com](http://donut-sim.s3-website-ap-southeast-2.amazonaws.com)
-
 ## ✨ Features
 
 - Interactive user interface built with React
