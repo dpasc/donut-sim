@@ -1,70 +1,87 @@
-# Getting Started with Create React App
+# Donut Sim
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A web application for simulating or visualizing donuts, built with React and PrimeReact.
 
-## Available Scripts
+## 🚀 Live Demo
 
-In the project directory, you can run:
+[http://donut-sim.s3-website-ap-southeast-2.amazonaws.com](http://donut-sim.s3-website-ap-southeast-2.amazonaws.com)
 
-### `npm start`
+## ✨ Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Interactive user interface built with React
+- Styled with PrimeReact and PrimeFlex
+- Responsive design
+- Easy build and deploy to AWS S3
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- [Node.js](https://nodejs.org/) (v14 or higher recommended)
+- [npm](https://www.npmjs.com/)
+- [AWS CLI](https://aws.amazon.com/cli/) (configured with access to the `donut-sim` S3 bucket)
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+   ```bash
+   git clone <repo-url>
+   cd donut-sim
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Running Locally
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Start the development server:
+```bash
+npm start
+```
+The app will be available at [http://localhost:3000](http://localhost:3000).
 
-### `npm run eject`
+## 🏗️ Build & Deploy
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Build
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+To create a production build:
+```bash
+npm run build
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Deploy
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+You can deploy to S3 using either of the following methods:
 
-## Learn More
+**Option 1: Bash Script**
+```bash
+./deploy.sh
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Option 2: NPM Script**
+```bash
+npm run deploy
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Both methods will:
+- Build the app
+- Sync the `build/` directory to the S3 bucket `donut-sim`
+- Remove old files from the bucket
 
-### Code Splitting
+**Note:** Ensure your AWS CLI is configured and you have access to the S3 bucket.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 📁 Project Structure
 
-### Analyzing the Bundle Size
+- `src/` - Source code (React components, styles)
+- `public/` - Static assets and HTML template
+- `deploy.sh` - Build and deploy script
+- `package.json` - Project configuration and scripts
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🤝 Contributing
 
-### Making a Progressive Web App
+Contributions are welcome! Please open issues or submit pull requests for improvements.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📝 License
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License.

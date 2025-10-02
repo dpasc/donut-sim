@@ -2,37 +2,210 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
+/* Top-right time display */
+.app-time-topright {
+  position: fixed;
+  top: 18px;
+  right: 32px;
+  z-index: 1000;
+  background: rgba(255,255,255,0.92);
+  padding: 0.4em 1.1em;
+  border-radius: 1.2em;
+  font-size: 1.18em;
+  font-weight: 600;
+  color: #222;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  letter-spacing: 0.04em;
+  user-select: none;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Animation for order cards */
+.order-card-enter {
+  opacity: 0;
+  transform: scale(0.95) translateY(20px);
+}
+.order-card-enter-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition: opacity 400ms cubic-bezier(0.23, 1, 0.32, 1), transform 400ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.order-card-exit {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+.order-card-exit-active {
+  opacity: 0;
+  transform: scale(0.95) translateY(20px);
+  transition: opacity 400ms cubic-bezier(0.23, 1, 0.32, 1), transform 400ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* PrimeFlex/PrimeReact card spacing polish */
+.p-grid {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.p-col-12.p-md-3 {
+  padding: 0.5rem !important;
+}
+.p-card {
+  border-radius: 1rem !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+  min-height: 340px;
+  height: 100%; /* Ensures card fills the container */
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.p-card .p-card-body {
+  padding: 1.5rem 1rem 1rem 1rem !important;
+}
+.p-button {
+  width: 100%;
+  text-align: center;
+}
+
+.donut-emojis {
+  margin-left: 8px;
+  font-size: 1.3em;
+  white-space: nowrap;
+}
+.order-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  justify-content: flex-start;
+  align-items: stretch; /* Ensures all cards in a row are the same height */
+}
+
+.order-card-container {
+  flex: 1 1 20%;
+  max-width: 20%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Increased card size for timer visibility */
+  min-width: 340px;
+  max-width: 340px;
+  min-height: 340px;
+  max-height: 340px;
+  width: 340px;
+  height: 340px;
+  box-sizing: border-box;
+}
+
+/* Ensure card content uses flex column layout for consistent positioning */
+.order-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+.order-card-title {
+  flex: 0 0 auto;
+  margin-bottom: 0.5rem;
+}
+
+.order-card-donuts {
+  flex: 1 1 auto;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.App-link {
-  color: #61dafb;
+.order-card-button {
+  flex: 0 0 auto;
+  margin-top: 0.5rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.order-card-timer {
+  flex: 0 0 auto;
+  margin-top: 0.5rem;
+  margin-bottom: 0.2rem;
+  text-align: center;
+  color: #444;
+  font-size: 1.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.5em;
+}
+/* Donut grid: 4 columns, center donuts, gap between */
+.donut-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1.2em;
+  gap: 4px 4px;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto 0.5rem auto;
+  font-size: 1.3em;
+  height: 4.5em;
+  min-height: 4.5em;
+  max-height: 4.5em;
+  overflow: hidden;
+}
+
+.donut-emojis {
+  margin-left: 8px;
+  font-size: 1.3em;
+  white-space: nowrap;
+}
+@media (max-width: 900px) {
+  .order-card-container {
+    flex-basis: 33.33%;
+    max-width: 33.33%;
+    min-width: 220px;
+    max-width: 220px;
+    min-height: 220px;
+    max-height: 220px;
+    width: 220px;
+    height: 220px;
   }
-  to {
-    transform: rotate(360deg);
+  .p-card {
+    min-height: 220px;
+  }
+  .order-card-content {
+    min-height: 100%;
+  }
+}
+@media (max-width: 600px) {
+  .order-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .order-card-container {
+    flex-basis: 100%;
+    max-width: 100%;
+    min-width: 160px;
+    max-width: 100%;
+    min-height: 160px;
+    max-height: 160px;
+    width: 160px;
+    height: 160px;
+  }
+  .p-card {
+    min-height: 160px;
+    font-size: 0.98rem;
+  }
+  .donut-grid {
+    font-size: 1.1em;
+    min-height: 2em;
+    max-height: 3.5em;
   }
 }
