@@ -1,6 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Card } from "primereact/card";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
+import OrderCard from "./OrderCard";
+import useNow from "./useNow";
+import { groupIntoRows, getDonutCount, getFormattedTime } from "./utils";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeflex/primeflex.css";
@@ -31,48 +34,19 @@ function getRandomIntervalMs() {
 }
 
 const Layout = () => {
-  const [orders, setOrders] = useState([]);
-  const [now, setNow] = useState(Date.now());
+  const [orders, setOrders] = React.useState([]);
   const lastIdRef = useRef(0);
   const timeoutRef = useRef(null);
+  const now = useNow();
 
-  // Format time as HH:mm:ss
-  const getFormattedTime = (timestamp) => {
-    const date = new Date(timestamp);
-    return date
-      .toLocaleTimeString('en-AU', { hour12: false });
-  };
-  // Map of refs for each order card
+  // Map of refs for each order card (for animation)
   const orderRefs = useRef({});
-  // Helper to get/create a ref for each order
   const getOrderRef = (id) => {
     if (!orderRefs.current[id]) {
       orderRefs.current[id] = React.createRef();
     }
     return orderRefs.current[id];
   };
-
-  // Map order type to donut count
-  const getDonutCount = (type) => {
-    switch (type) {
-      case "single":
-        return 1;
-      case "double":
-        return 2;
-      case "halfDozen":
-        return 6;
-      case "fullDozen":
-        return 12;
-      default:
-        return 1;
-    }
-  };
-
-  // Update 'now' every second for live counter
-  useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Function to schedule the next order
   const scheduleNextOrder = () => {
@@ -86,7 +60,7 @@ const Layout = () => {
     }, interval);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Add an order immediately for testing/demo purposes
     setOrders(prev => {
       const newOrder = generateRandomOrder(lastIdRef);
@@ -116,69 +90,43 @@ const Layout = () => {
             </Card>
           </div>
         ) : (
-          // Group orders into rows of 5
-          (() => {
-            const activeOrders = orders.filter(order => order.completionTime === null);
-            const rows = [];
-            for (let i = 0; i < activeOrders.length; i += 5) {
-              rows.push(activeOrders.slice(i, i + 5));
-            }
-            return rows.map((row, rowIdx) => (
-              <div className="order-row" key={rowIdx}>
-                <TransitionGroup component={null}>
-                  {row.map(order => {
-                    const nodeRef = getOrderRef(order.id);
-                    return (
-                      <CSSTransition
-                        key={order.id}
-                        timeout={400}
-                        classNames="order-card"
+          groupIntoRows(
+            orders.filter(order => order.completionTime === null),
+            5
+          ).map((row, rowIdx) => (
+            <div className="order-row" key={rowIdx}>
+              <TransitionGroup component={null}>
+                {row.map(order => {
+                  const nodeRef = getOrderRef(order.id);
+                  return (
+                    <CSSTransition
+                      key={order.id}
+                      timeout={400}
+                      classNames="order-card"
+                      nodeRef={nodeRef}
+                    >
+                      <OrderCard
+                        order={order}
+                        donutCount={getDonutCount(order.type)}
+                        isCompleted={false}
+                        onComplete={() => {
+                          setOrders(prev =>
+                            prev.map(o =>
+                              o.id === order.id
+                                ? { ...o, completionTime: new Date().toISOString() }
+                                : o
+                            )
+                          );
+                        }}
+                        timer={Math.floor((now - new Date(order.timestamp).getTime()) / 1000)}
                         nodeRef={nodeRef}
-                      >
-                        <div className="order-card-container" ref={nodeRef}>
-                          <Card>
-                            <div className="order-card-content">
-                              <div className="order-card-title">
-                                <span style={{ fontWeight: 600, marginBottom: 8 }}>{`Order #${order.id}`}</span>
-                              </div>
-                              <div className="order-card-donuts">
-                                <div className="donut-grid">
-                                  {Array.from({ length: getDonutCount(order.type) }).map((_, idx) => (
-                                    <span key={idx} role="img" aria-label="donut">🍩</span>
-                                  ))}
-                                </div>
-                              </div>
-                              <div className="order-card-button">
-                                <button
-                                  className="p-button p-component p-button-success"
-                                  style={{ margin: "1rem auto 0 auto", display: "block" }}
-                                  onClick={() => {
-                                    setOrders(prev =>
-                                      prev.map(o =>
-                                        o.id === order.id
-                                          ? { ...o, completionTime: new Date().toISOString() }
-                                          : o
-                                      )
-                                    );
-                                  }}
-                                >
-                                  Complete
-                                </button>
-                              </div>
-                              <div className="order-card-timer">
-                                <i className="pi pi-clock" style={{ marginRight: 4 }} />
-                                {Math.floor((now - new Date(order.timestamp).getTime()) / 1000)}s
-                              </div>
-                            </div>
-                          </Card>
-                        </div>
-                      </CSSTransition>
-                    );
-                  })}
-                </TransitionGroup>
-              </div>
-            ));
-          })()
+                      />
+                    </CSSTransition>
+                  );
+                })}
+              </TransitionGroup>
+            </div>
+          ))
         )}
       </div>
       {/* Completed Orders Log */}
@@ -189,46 +137,24 @@ const Layout = () => {
             <p>No completed orders yet.</p>
           </Card>
         ) : (
-          // Group completed orders into rows of 5
-          (() => {
-            const completedOrders = orders
+          groupIntoRows(
+            orders
               .filter(order => order.completionTime !== null)
-              .sort((a, b) => new Date(b.completionTime) - new Date(a.completionTime));
-            const rows = [];
-            for (let i = 0; i < completedOrders.length; i += 5) {
-              rows.push(completedOrders.slice(i, i + 5));
-            }
-            return rows.map((row, rowIdx) => (
-              <div className="order-row" key={rowIdx}>
-                {row.map(order => (
-                  <div className="order-card-container" key={order.id}>
-                    <Card
-                      className="p-mb-2"
-                      footer={
-                        <span>
-                          <i className="pi pi-check" style={{ marginRight: 4 }} />
-                          Completed: {Math.floor((new Date(order.completionTime) - new Date(order.timestamp)) / 1000)}s
-                        </span>
-                      }
-                    >
-                      <div className="order-card-content">
-                        <div className="order-card-title">
-                          <span style={{ fontWeight: 600, marginBottom: 8 }}>{`Order #${order.id}`}</span>
-                        </div>
-                        <div className="order-card-donuts">
-                          <div className="donut-grid">
-                            {Array.from({ length: getDonutCount(order.type) }).map((_, idx) => (
-                              <span key={idx} role="img" aria-label="donut">🍩</span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-                ))}
-              </div>
-            ));
-          })()
+              .sort((a, b) => new Date(b.completionTime) - new Date(a.completionTime)),
+            5
+          ).map((row, rowIdx) => (
+            <div className="order-row" key={rowIdx}>
+              {row.map(order => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  donutCount={getDonutCount(order.type)}
+                  isCompleted={true}
+                  timer={Math.floor((new Date(order.completionTime) - new Date(order.timestamp)) / 1000)}
+                />
+              ))}
+            </div>
+          ))
         )}
       </div>
     </div>
